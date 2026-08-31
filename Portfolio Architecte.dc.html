@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;1,300&family=Space+Grotesk:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #ffffff; }
+  * { box-sizing: border-box; }
+  a { color: oklch(0.30 0.028 50); text-decoration: none; }
+  a:hover { color: oklch(0.52 0.09 45); }
+</style>
+</helmet>
+<div style="min-height:100vh;background:#ffffff;color:oklch(0.28 0.025 50);font-family:'Spectral',Georgia,serif;-webkit-font-smoothing:antialiased">
+
+  <header style="display:flex;justify-content:space-between;align-items:baseline;gap:32px;padding:38px 48px 0 48px">
+    <div onClick="{{ goHome }}" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:14px;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer">Edgar Monnet</div>
+    <div style="display:flex;gap:28px;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.55 0.02 60)">
+      <span onClick="{{ goHome }}" style="cursor:pointer;color:oklch(0.28 0.025 50)" style-hover="color:oklch(0.52 0.09 45)">Architecture</span>
+      <span onClick="{{ goDivers }}" style="cursor:pointer" style-hover="color:oklch(0.28 0.025 50)">Projets divers</span>
+      <span onClick="{{ goAbout }}" style="cursor:pointer" style-hover="color:oklch(0.28 0.025 50)">À propos</span>
+    </div>
+  </header>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <main style="padding:44px 48px 96px 48px">
+      <sc-for list="{{ years }}" as="y" hint-placeholder-count="6">
+      <section id="{{ y.anchor }}" style="margin-bottom:80px">
+        <div style="display:flex;align-items:center;gap:20px;margin-bottom:40px">
+          <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.14em;color:oklch(0.45 0.02 60)">{{ y.year }}</span>
+          <span style="flex:1;height:1px;background:oklch(0.90 0.01 78)"></span>
+        </div>
+      <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:44px 40px;align-items:start">
+        <sc-for list="{{ y.items }}" as="p" hint-placeholder-count="3">
+          <div onClick="{{ p.open }}" onMouseEnter="{{ p.onEnter }}" onMouseLeave="{{ p.onLeave }}" style="cursor:pointer;position:relative;overflow:hidden;background:oklch(0.93 0.008 80);grid-column:{{ p.gc }};grid-row:{{ p.gr }};align-self:{{ p.al }};aspect-ratio:{{ p.ratio }};margin-top:{{ p.mt }}">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,oklch(0.90 0.010 78) 0 9px,oklch(0.945 0.008 80) 9px 18px);display:flex;align-items:center;justify-content:center;transition:transform 620ms cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.045)">
+              <sc-if value="{{ p.noCover }}" hint-placeholder-val="{{ true }}">
+                <span style="font-family:'Space Grotesk',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.60 0.02 60);background:#ffffff;padding:5px 9px">{{ p.slotLabel }}</span>
+              </sc-if>
+              <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;background-color:{{ p.coverBase }};background-image:{{ p.coverBg }};filter:grayscale(1);transition:filter 520ms ease" style-hover="filter:grayscale(0)"></div>
+            </div>
+            <div style="position:absolute;left:0;right:0;bottom:0;padding:20px;background:linear-gradient(to top,oklch(0.20 0.02 50 / 0.72),oklch(0.20 0.02 50 / 0));pointer-events:none;transition:opacity 320ms ease;opacity:{{ p.captionOpacity }}">
+              <div style="font-size:18px;line-height:1.25;color:oklch(0.985 0.004 80)">{{ p.title }}</div>
+              <div style="display:flex;gap:12px;margin-top:4px;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;letter-spacing:0.09em;text-transform:uppercase;color:oklch(0.88 0.01 78)">
+                <sc-if value="{{ showLocationInGrid }}" hint-placeholder-val="{{ true }}"><span>{{ p.location }}</span></sc-if>
+                <sc-if value="{{ showYearInGrid }}" hint-placeholder-val="{{ true }}"><span>{{ p.year }}</span></sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      </section>
+      </sc-for>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isProject }}" hint-placeholder-val="{{ false }}">
+    <main style="padding:40px 48px 110px 48px">
+      <div onClick="{{ goBack }}" style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:oklch(0.55 0.02 60);cursor:pointer;margin-bottom:48px;display:inline-block" style-hover="color:oklch(0.52 0.09 45)">← Tous les projets</div>
+
+      <div style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:64px;align-items:start;margin-bottom:72px">
+        <div>
+          <h1 style="font-size:44px;font-weight:300;line-height:1.12;margin:0 0 22px 0;text-wrap:pretty">{{ current.title }}</h1>
+          <div style="display:flex;flex-wrap:wrap;gap:22px 40px;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:oklch(0.55 0.02 60);border-top:1px solid oklch(0.88 0.01 78);padding-top:16px">
+            <div style="display:flex;flex-direction:column;gap:5px"><span style="color:oklch(0.70 0.015 70)">Année</span><span>{{ current.year }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px"><span style="color:oklch(0.70 0.015 70)">Lieu</span><span>{{ current.location }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px"><span style="color:oklch(0.70 0.015 70)">Type</span><span>{{ current.type }}</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px"><span style="color:oklch(0.70 0.015 70)">Cadre</span><span>{{ current.mode }}</span></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:18px;font-size:16px;line-height:1.7;color:oklch(0.38 0.02 55);text-wrap:pretty;padding-top:6px">
+          <sc-for list="{{ current.text }}" as="para" hint-placeholder-count="2">
+            <p style="margin:0">{{ para }}</p>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:56px 20px;max-width:820px;margin:0 auto">
+        <sc-for list="{{ current.images }}" as="img" hint-placeholder-count="4">
+          <figure onClick="{{ img.zoom }}" style="margin:0;display:flex;flex-direction:column;gap:10px;cursor:zoom-in;flex:{{ img.basis }}">
+            <div style="position:relative;background:repeating-linear-gradient(135deg,oklch(0.90 0.010 78) 0 9px,oklch(0.945 0.008 80) 9px 18px);display:flex;align-items:center;justify-content:center;overflow:hidden;aspect-ratio:{{ img.ratio }}">
+              <sc-if value="{{ img.noSrc }}" hint-placeholder-val="{{ true }}">
+                <span style="font-family:'Space Grotesk',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.60 0.02 60);background:#ffffff;padding:5px 9px">{{ img.slot }}</span>
+              </sc-if>
+              <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;background-color:{{ img.base }};background-image:{{ img.bg }}"></div>
+            </div>
+            <sc-if value="{{ galleryCaptions }}" hint-placeholder-val="{{ true }}">
+              <figcaption style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;letter-spacing:0.08em;color:oklch(0.60 0.02 60)">{{ img.caption }}</figcaption>
+            </sc-if>
+          </figure>
+        </sc-for>
+      </div>
+
+      <div style="margin-top:88px;border-top:1px solid oklch(0.88 0.01 78);padding-top:24px;display:flex;justify-content:space-between;gap:24px;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase">
+        <span onClick="{{ goPrev }}" style="cursor:pointer;color:oklch(0.55 0.02 60)" style-hover="color:oklch(0.52 0.09 45)">← {{ prevTitle }}</span>
+        <span onClick="{{ goNext }}" style="cursor:pointer;color:oklch(0.55 0.02 60)" style-hover="color:oklch(0.52 0.09 45)">{{ nextTitle }} →</span>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isDivers }}" hint-placeholder-val="{{ false }}">
+    <main style="padding:44px 48px 96px 48px">
+      <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:96px 48px;align-items:start;padding-bottom:40px">
+        <sc-for list="{{ divers }}" as="p" hint-placeholder-count="3">
+          <div onClick="{{ p.open }}" onMouseEnter="{{ p.onEnter }}" onMouseLeave="{{ p.onLeave }}" style="cursor:pointer;position:relative;overflow:hidden;background:oklch(0.93 0.008 80);grid-column:{{ p.gc }};grid-row:{{ p.gr }};align-self:{{ p.al }};aspect-ratio:{{ p.ratio }};margin-top:{{ p.mt }}">
+            <div style="position:absolute;inset:0;background:repeating-linear-gradient(135deg,oklch(0.90 0.010 78) 0 9px,oklch(0.945 0.008 80) 9px 18px);display:flex;align-items:center;justify-content:center;transition:transform 620ms cubic-bezier(.2,.7,.2,1)" style-hover="transform:scale(1.045)">
+              <sc-if value="{{ p.noCover }}" hint-placeholder-val="{{ true }}">
+                <span style="font-family:'Space Grotesk',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.60 0.02 60);background:#ffffff;padding:5px 9px">{{ p.slotLabel }}</span>
+              </sc-if>
+              <div style="position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;background-color:{{ p.coverBase }};background-image:{{ p.coverBg }};filter:grayscale(1);transition:filter 520ms ease" style-hover="filter:grayscale(0)"></div>
+            </div>
+            <div style="position:absolute;left:0;right:0;bottom:0;padding:20px;background:linear-gradient(to top,oklch(0.20 0.02 50 / 0.72),oklch(0.20 0.02 50 / 0));pointer-events:none;transition:opacity 320ms ease;opacity:{{ p.captionOpacity }}">
+              <div style="font-size:18px;line-height:1.25;color:oklch(0.985 0.004 80)">{{ p.title }}</div>
+              <div style="display:flex;gap:12px;margin-top:4px;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;letter-spacing:0.09em;text-transform:uppercase;color:oklch(0.88 0.01 78)">
+                <sc-if value="{{ showLocationInGrid }}" hint-placeholder-val="{{ true }}"><span>{{ p.location }}</span></sc-if>
+                <sc-if value="{{ showYearInGrid }}" hint-placeholder-val="{{ true }}"><span>{{ p.year }}</span></sc-if>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+    <main style="padding:64px 48px 110px 48px">
+      <div>
+        <div style="display:flex;flex-direction:column;gap:40px">
+          <section style="display:flex;flex-direction:column;gap:20px">
+            <h2 style="margin:0;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.55 0.02 60)">Qui suis-je ?</h2>
+            <p style="margin:0;font-size:16px;line-height:1.7;color:oklch(0.38 0.02 55);text-wrap:pretty">Passionné d'architecture depuis longtemps, c'est par l'objet à échelle 1 et l'ébénisterie que j'ai commencé à m'y intéresser. Cet attrait pour l'échelle 1 m'a toujours poussé à m'intéresser à la manière dont les choses s'assemblent, et aux détails qui peuvent être la clé de voûte d'un projet. J'ai eu à cœur durant mes études d'utiliser des matériaux bruts et naturels pour réaliser mes projets. Je cherche à concevoir une architecture sobre, précise et sensible, capable d'évoluer avec le temps et son contexte. Tout juste diplômé de l'École Nationale Supérieure d'Architecture de Paris-Malaquais, j'aimerais maintenant confronter ma conception de l'architecture aux problématiques réelles et aux défis au cœur de notre profession.</p>
+          </section>
+          <section style="display:flex;flex-direction:column;gap:20px;max-width:620px">
+            <h2 style="margin:0;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.55 0.02 60)">Formation</h2>
+            <div style="display:grid;grid-template-columns:minmax(88px,max-content) minmax(0,1fr);gap:14px 24px;font-size:16px;line-height:1.6;color:oklch(0.38 0.02 55);text-wrap:pretty">
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2026</span>
+              <span>Diplôme d’État d’architecte obtenu avec la mention très bien</span>
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2023-2026</span>
+              <span>Cycle Master, École Nationale Supérieure d’Architecture Paris-Malaquais</span>
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2023</span>
+              <span>Semestre à la FADU, UBA, Buenos Aires</span>
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2021</span>
+              <span>Formation en Résistance des matériaux au Conservatoire National des Arts et Métiers</span>
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2020-2023</span>
+              <span>Cycle Licence, École Nationale Supérieure d’Architecture Paris-Malaquais</span>
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2017-2020</span>
+              <span>Lycée Sainte Jeanne Elisabeth, Paris<br />Baccalauréat scientifique avec mention très bien, Classe européenne espagnole</span>
+            </div>
+          </section>
+          <section style="display:flex;flex-direction:column;gap:20px;max-width:620px">
+            <h2 style="margin:0;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.55 0.02 60)">Expérience</h2>
+            <div style="display:grid;grid-template-columns:minmax(88px,max-content) minmax(0,1fr);gap:14px 24px;font-size:16px;line-height:1.6;color:oklch(0.38 0.02 55);text-wrap:pretty">
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2026</span>
+              <span>Chantier participatif : Rénovation de la ruine d’une maisonnette et d’un four à pain traditionnel</span>
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2025</span>
+              <span>Réalisation du permis de construire et suivi de chantier de la déconstruction et construction d'une véranda</span>
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2024-2025</span>
+              <span>Stage de Master<br />6 mois dans l’agence d’architecture h2o architectes</span>
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2023-2024</span>
+              <span>Participation au projet Archi-Folies<br />Conception et construction d’un pavillon pour les Jeux-Olympiques</span>
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2022</span>
+              <span>Stage de licence<br />1 mois dans l’agence d’architecture Brenac et Gonzalez</span>
+              <span style="font-family:'Space Grotesk',Helvetica,sans-serif;font-size:13px;letter-spacing:0.04em;color:oklch(0.58 0.02 60);padding-top:2px">2021</span>
+              <span>Stage ouvrier<br />2 semaines</span>
+            </div>
+          </section>
+          <section style="display:flex;flex-direction:column;gap:20px;max-width:620px;border-top:1px solid oklch(0.88 0.01 78);padding-top:22px">
+            <h2 style="margin:0;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:oklch(0.55 0.02 60)">Contact</h2>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:16px;line-height:1.6">
+              <span onClick="{{ copyMail }}" onMouseMove="{{ trackMail }}" onMouseLeave="{{ hideTip }}" style="cursor:pointer;width:max-content;color:oklch(0.30 0.028 50)" style-hover="color:oklch(0.52 0.09 45)">edgar.monnet@gmail.com</span>
+              <span onClick="{{ copyPhone }}" onMouseMove="{{ trackMail }}" onMouseLeave="{{ hideTip }}" style="cursor:pointer;width:max-content;color:oklch(0.30 0.028 50)" style-hover="color:oklch(0.52 0.09 45)">06 52 85 30 58</span>
+              <a href="https://www.linkedin.com/in/edgar-monnet-5a453b224" target="_blank" rel="noopener" style="width:max-content">LinkedIn — Edgar Monnet</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </sc-if>
+
+  <sc-if value="{{ lightboxOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:100;background:oklch(0.16 0.012 50 / 0.97);display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:24px;padding:20px 28px;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;letter-spacing:0.11em;text-transform:uppercase;color:oklch(0.78 0.012 70)">
+        <span>{{ lbCaption }}</span>
+        <span style="display:flex;align-items:center;gap:26px">
+          <span>{{ lbCounter }}</span>
+          <span onClick="{{ closeLightbox }}" style="cursor:pointer" style-hover="color:#ffffff">Fermer ✕</span>
+        </span>
+      </div>
+      <div style="flex:1;display:flex;align-items:center;gap:8px;padding:0 20px 34px 20px;min-height:0">
+        <span onClick="{{ lbPrev }}" style="cursor:pointer;padding:18px;font-size:22px;color:oklch(0.72 0.012 70);user-select:none" style-hover="color:#ffffff">←</span>
+        <div style="flex:1;height:100%;background-size:contain;background-position:center;background-repeat:no-repeat;background-image:{{ lbBg }}"></div>
+        <span onClick="{{ lbNext }}" style="cursor:pointer;padding:18px;font-size:22px;color:oklch(0.72 0.012 70);user-select:none" style-hover="color:#ffffff">→</span>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ scrolled }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;justify-content:center;padding:0 48px 26px 48px">
+      <span onClick="{{ scrollTop }}" style="cursor:pointer;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:10px;letter-spacing:0.11em;text-transform:uppercase;color:oklch(0.55 0.02 60)" style-hover="color:oklch(0.28 0.025 50)">↑ Cliquer pour revenir vers le haut</span>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ tipVisible }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;z-index:50;pointer-events:none;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;background:oklch(0.24 0.02 50);color:#fff;padding:5px 8px;left:{{ tipLeft }};top:{{ tipTop }}">{{ tipText }}</div>
+  </sc-if>
+
+  <footer style="padding:28px 48px 40px 48px;border-top:1px solid oklch(0.90 0.01 78);display:flex;justify-content:space-between;gap:24px;font-family:'Space Grotesk',Helvetica,sans-serif;font-size:11px;letter-spacing:0.09em;color:oklch(0.62 0.02 60)">
+    <span>Edgar Monnet — Architecte</span>
+    <span>edgar.monnet@gmail.com</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showYearInGrid&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Grille d'accueil&quot;},&quot;showLocationInGrid&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Grille d'accueil&quot;},&quot;galleryCaptions&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Page projet&quot;}}">
+const PROJECTS = [
+  { id: "pfe-tremplin", title: "PFE : S'implanter après le saut, une architecture de la résonnance", year: "2026", location: "Grenoble, FR", type: "Projet de fin d'études", mode: "Projet individuel",
+    gc: "1 / span 3",
+    cover: "uploads/L1003973.png", coverRatio: "5976 / 3992",
+    images: [
+      { src: "uploads/L1003973.png", ratio: "5976 / 3992", caption: "Le tremplin depuis la vallée" },
+      { src: "uploads/pfe-horizontales.jpg", ratio: "9177 / 6490", base: "#ffffff", caption: "Plan de situation" },
+      { src: "uploads/pfe-plan-situation-v2.jpg", ratio: "4874 / 6893", base: "#ffffff", caption: "Plan de situation, itinéraire de randonnée" },
+      { src: "uploads/pfe-maquette-500.jpg", ratio: "5712 / 4284", base: "#ffffff", caption: "Maquette de site, 1/500" },
+      { src: "uploads/pfe-vue-piste.png", ratio: "1491 / 1055", caption: "Vue du Bâtiment résidentiel" },
+      { src: "uploads/pfe-plan-refuge.jpg", ratio: "4961 / 3508", base: "#ffffff", caption: "Plan RDC, Bâtiment résidentiel" },
+      { src: "uploads/pfe-coupe-refuge.jpg", ratio: "4961 / 3508", base: "#ffffff", caption: "Coupe transversale du bâtiment résidentiel" },
+      { src: "uploads/pfe-vue-tunnel.png", ratio: "1491 / 1055", caption: "Le centre de rééducation dans la pente" },
+      { src: "uploads/pfe-coupe-centre.jpg", ratio: "4961 / 3508", base: "#ffffff", caption: "Plan RDC, espace de rééducation" },
+      { src: "uploads/pfe-coupe-longue.jpg", ratio: "4961 / 3508", base: "#ffffff", caption: "Coupe transversale de l'espace de rééducation" },
+      { src: "uploads/pfe-vue-tremplin.png", ratio: "1491 / 1055", caption: "Vue de la tour d'accès du tremplin depuis le GR91" },
+      { src: "uploads/pfe-plan-tremplin.jpg", ratio: "4961 / 3508", base: "#ffffff", caption: "Plan de l'espace public / refuge" },
+      { src: "uploads/pfe-coupe-tremplin.jpg", ratio: "4961 / 3508", base: "#ffffff", caption: "Coupe transversale de l'espace public / refuge" },
+      { half: true, src: "uploads/pfe-maquette-50-01.jpg", ratio: "4111 / 3083", caption: "Maquette 1/50, vue rapprochée" },
+      { half: true, src: "uploads/pfe-maquette-50-02.jpg", ratio: "5712 / 4284", caption: "Maquette 1/50, vue d'ensemble" },
+      { src: "uploads/pfe-detail-1-20.jpg", ratio: "3695 / 9934", base: "#ffffff", caption: "Détail constructif d'une façade, 1/20" }
+    ],
+    text: ["Le tremplin du Dauphiné, construit pour les Jeux Olympiques de 1968 et abandonné depuis, pose une question simple : comment une architecture conçue pour un instant peut-elle s’inscrire dans la durée . En s’appuyant sur le concept de Résonnance d’Hartmut Rosa et en faisant de la marche son fil conducteur, le projet greffe des structures légères en bois sur le béton existant pour accueillir un “refuge” public et un centre de rééducation sportive."] },
+  { id: "chantier-maisonnette", title: "Chantier participatif : maisonnette et four à pain", year: "2026", location: "Villeneuve-sur-Allier, FR", type: "Rénovation", mode: "Projet en groupe",
+    gc: "5 / span 2",
+    cover: "uploads/image00007-3cf76a11.jpeg", coverRatio: "2883 / 3844",
+    images: [
+      { src: "uploads/image00007-3cf76a11.jpeg", ratio: "2883 / 3844", caption: "Photo du projet après pose des chevrons" },
+      { src: "uploads/image00001.jpeg", ratio: "1044 / 1392", caption: "La ruine avant intervention" },
+      { src: "uploads/maisonnette-dessin.jpg", ratio: "2597 / 1833", caption: "Élévation de la toiture" },
+      { half: true, src: "uploads/maisonnette-06.jpeg", ratio: "1152 / 1536", caption: "Murs envahis par la mousse" },
+      { half: true, src: "uploads/image00009.jpeg", ratio: "4284 / 5712", caption: "Renforcement et reconstruction du mur en pierre et chaux" },
+      { half: true, src: "uploads/image00004.jpeg", ratio: "1536 / 2048", caption: "Etat du mur avant intervention" },
+      { half: true, src: "uploads/image00002.jpeg", ratio: "3024 / 4032", caption: "Photo du mur une fois reconstruit" },
+      { half: true, src: "uploads/image00010.jpeg", ratio: "2863 / 3818", caption: "Photo rapprochée des chevrons" },
+      { half: true, src: "uploads/image00008.jpeg", ratio: "4284 / 5712", caption: "Photo des chevrons" }
+    ],
+    text: ["Un ancien four à pain tradtionnel auquel avait été acollé une maisonette était en ruine depuis longtemps. Après avoir modélisé la toiture, nous avons réalisé un chantier avec des amis durant 5 jours.",
+           "Après avoir tout déblayer, la première étape a consisté à stabiliser la structure existante en reprenant tous les joints à la chaux, en démontant et en remontant certains parties trop endommagées. Puis nous avons pu poser la charpente sur les murs d’arrase stabilisés."] },
+  { id: "ecole-foret", title: "École de la forêt à Fontainebleau", year: "2026", location: "Fontainebleau, FR", type: "École", mode: "Projet en groupe",
+    gc: "2 / span 3", mt: "72px",
+    cover: "uploads/_DSC9790.jpg", coverRatio: "5568 / 3712",
+    images: [
+      { src: "uploads/_DSC9790.jpg", ratio: "5568 / 3712", caption: "Maquette" },
+      { src: "uploads/foret-coupe-classes-dortoirs-v2.jpg", ratio: "3468 / 1422", caption: "Coupe longitudinale, classes et dortoirs, 1/200" },
+      { src: "uploads/foret-coupe-classe-v2.jpg", ratio: "3470 / 1681", caption: "Coupe sur les classes, 1/200" },
+      { src: "uploads/foret-coupe-dortoirs-v2.jpg", ratio: "3470 / 1463", caption: "Coupe sur les dortoirs, 1/200" },
+      { src: "uploads/foret-vue-1.png", ratio: "5000 / 2813", caption: "Vue perspective depuis les classes" },
+      { src: "uploads/foret-vue-2.png", ratio: "4000 / 2250", caption: "Vue perspective extérieure des classes" },
+      { src: "uploads/foret-coupe-50.jpg", ratio: "3508 / 2481", caption: "Coupe sur les salles de classe, 1/50" },
+      { src: "uploads/foret-plan-50-v2.jpg", ratio: "4851 / 3426", caption: "Plan des salles de classe, 1/50" },
+      { src: "uploads/_DSC9727.jpg", ratio: "5568 / 3712", caption: "Maquette, vue d'ensemble" },
+      { src: "uploads/_DSC9741.jpg", ratio: "5568 / 3712", caption: "Maquette, détail de façade" },
+      { src: "uploads/_DSC9769.jpg", ratio: "3712 / 5568", caption: "Maquette, détail d'angle" }
+    ],
+    text: ["Nous avons réalisé une promenade en chapelet parcemée de différents projets ayant pour but de ramener des activités diverses. Notre projet s’inscrit dans la promenade des hauteurs, proposé par région est ensemble qui vise à valoriser les territoires et promouvoir le tourisme local.",
+           "L’idée est d’intervenir ponctuellement à des endroits stratégiques en signifiant la promenade par les points de vues qu’on peut avoir d’un projet à un autre."] },
+
+  { id: "temple-theatre", title: "Réhabilitation d'un temple en théâtre", year: "2025", location: "Ponzano di Fermo, Italie", type: "Concours : Reuse Italy", mode: "Projet en groupe",
+    gc: "1 / span 2",
+    cover: "uploads/temple-perspective.png", coverRatio: "2649 / 2119",
+    images: [
+      { src: "uploads/temple-perspective.png", ratio: "2649 / 2119", caption: "Perspective générale" },
+      { src: "uploads/temple-axo.jpg", ratio: "2481 / 1754", base: "#ffffff", caption: "Axonométrie" },
+      { src: "uploads/temple-coupe.jpg", ratio: "2482 / 1241", base: "#ffffff", caption: "Coupe" },
+      { src: "uploads/temple-plan.jpg", ratio: "4963 / 3509", caption: "Plan" }
+    ],
+    text: ["Notre projet prend racine dans une réflexion sur la forme des théâtres antiques et leur capacité à générer des dispositifs scéniques où architecture, paysage et récit se confondent.",
+           "La forme octogonale, par sa symétrie et ses huit arches ouvertes sur le paysage, nous est apparue comme un panorama fragmenté, une série de huit points de vue cadrant la nature environnante. Trois « tableaux » ont été identifiés comme orientations scénographiques majeures."] },
+  { id: "veranda", title: "Véranda : permis de construire et suivi de chantier", year: "2025", location: "Montrouge, FR", type: "Extension", mode: "Projet en groupe",
+    gc: "5 / span 2", mt: "90px",
+    cover: "uploads/veranda-01.jpg", coverRatio: "1448 / 1086",
+    images: [
+      { src: "uploads/veranda-01.jpg", ratio: "1448 / 1086", caption: "Vue depuis le jardin de la nouvelle véranda" },
+      { src: "uploads/veranda-chantier.png", ratio: "1448 / 1086", caption: "Déconstruction de l'ancienne véranda" },
+      { half: true, src: "uploads/veranda-plan-existant.jpg", ratio: "2481 / 1754", base: "#ffffff", caption: "Plan de l'ancienne véranda" },
+      { half: true, src: "uploads/veranda-plan-nouveau.jpg", ratio: "2481 / 1754", base: "#ffffff", caption: "Plan de la nouvelle véranda" },
+      { src: "uploads/veranda-interieur.jpeg", ratio: "3024 / 4032", caption: "Vue intérieure vers la terrasse" }
+    ],
+    text: ["La véranda de ma maison avait 30 ans et agissait comme une \"passoire thermique\". L'objectif en la changeant fut également de redéfinir le rapport entre intérieur et extérieur.",
+           "La nouvelle véranda a une ouverture beaucoup plus grande et son emprise sur le jardin est plus faible. Le devant a été creusé, permettant de réaliser une terrasse en bois pour profiter de l'exposition plein sud de la véranda, qui bénéficie du soleil une bonne partie de la journée.",
+           "Cette nouvelle configuration permet de voir l'extérieur comme une continuation de l'intérieur, avec la terrasse qui devient un seuil entre le salon et le jardin."] },
+
+  { id: "archi-folies", title: "Archi-Folies", year: "2024", location: "Parc de la Villette, Paris", type: "Pavillon pour les JO", mode: "Projet en groupe",
+    gc: "2 / span 3",
+    cover: "uploads/_THI7709.jpg", coverRatio: "3611 / 5409",
+    images: [
+      { src: "uploads/_THI7709.jpg", ratio: "3611 / 5409", caption: "Vue de la circulation arrière du pavillon" },
+      { src: "uploads/folies-gradins-detail.jpg", ratio: "4016 / 6016", caption: "Détail des gradins, bois et tôle ondulée" },
+      { src: "uploads/folies-vue-ensemble.jpg", ratio: "5776 / 3851", caption: "Le pavillon de l'escrime, vue d'ensemble" },
+      { src: "uploads/folies-assemblages.jpg", ratio: "6016 / 4016", caption: "Vue rapprochée des gradins" }
+    ],
+    text: ["Dans le cadre des Jeux Olympiques de Paris, chaque école d’architecture devait réaliser un pavillon en collaboration avec une féderation sportive. J’ai participé à la conception et à la constructiion du pavillon de l’escrime à Malaquais."] },
+
+  { id: "urbanisme-bagnolet", title: "Urbanisme à Bagnolet", year: "2023", location: "Bagnolet, FR", type: "Urbanisme", mode: "Projet en groupe",
+    gc: "1 / span 3", gr: "1 / span 2",
+    cover: "uploads/CARTE_12500_compressee_15Mo.png", coverRatio: "1446 / 2048",
+    images: [
+      { src: "uploads/CARTE_12500_compressee_15Mo.png", ratio: "1446 / 2048", caption: "Plan de situation, 1/2500" },
+      { src: "uploads/bagnolet-coupe.jpg", ratio: "3629 / 1579", base: "#ffffff", caption: "Élévation de la réhabilitation du RDC" },
+      { src: "uploads/bagnolet-plan-rdc.jpg", ratio: "3643 / 1599", base: "#ffffff", caption: "Plan de la réhabilitation du RDC" },
+      { src: "uploads/bagnolet-pers-resto.jpg", ratio: "2377 / 1681", caption: "Vue perspective de la réhabilitation du RDC" },
+      { half: true, src: "uploads/bagnolet-maquette-01.jpg", ratio: "4032 / 3024", caption: "Maquette, vue rapprochée" },
+      { half: true, src: "uploads/bagnolet-maquette-02.jpg", ratio: "3814 / 2860", caption: "Maquette, vue frontale" },
+      { src: "uploads/bagnolet-coupe-halle.jpg", ratio: "4874 / 1589", base: "#ffffff", caption: "Coupe longitudinale sur la halle" }
+    ],
+    text: ["Nous avons réalisé une promenade en chapelet parcemée de différents projets ayant pour but de ramener des activités diverses. Notre projet s’inscrit dans la promenade des hauteurs, proposé par région est ensemble qui vise à valoriser les territoires et promouvoir le tourisme local.",
+           "L’idée est d’intervenir ponctuellement à des endroits stratégiques en signifiant la promenade par les points de vues qu’on peut avoir d’un projet à un autre."] },
+  { id: "pavillon-perou", title: "Pavillon sur un fleuve au Pérou", year: "2023", location: "Pérou", type: "Pavillon scientifique", mode: "Projet en groupe",
+    gc: "4 / span 3", gr: "1",
+    cover: "uploads/vue-globale-finale.png", coverRatio: "1669 / 914",
+    images: [
+      { src: "uploads/vue-globale-finale.png", ratio: "1669 / 914", caption: "Vue globale du pavillon" },
+      { src: "uploads/perou-axo-eclatee.jpg", ratio: "3508 / 3700", base: "#ffffff", caption: "Axonométrie éclatée de la structure" },
+      { src: "uploads/perou-vue-int.png", ratio: "1920 / 1080", caption: "Vue intérieure vers le fleuve" },
+      { src: "uploads/perou-plan-texture.jpg", ratio: "3508 / 2481", base: "#ffffff", caption: "Plan RDC" },
+      { src: "uploads/perou-maquette-01b.jpg", ratio: "2048 / 1024", base: "#ffffff", caption: "Maquette, élévation" },
+      { src: "uploads/perou-maquette-02.jpg", ratio: "1536 / 2048", base: "#ffffff", caption: "Maquette, vue rapprochée" }
+    ],
+    text: ["Nous devions réaliser un pavillon sur le bord d’un fleuve au Pérou avec des programmes très peu définis. Nous avons réalisé une structure entièrement en bois flottante sur des bidons métalliques.",
+           "Nous avons réalisé des portiques avec des moisages en bois que l’on a répartis sur 24m."] },
+  { id: "centre-rosario", title: "Centre culturel à Rosario", year: "2023", location: "Rosario, Argentine", type: "Centre culturel", mode: "Projet en groupe",
+    gc: "4 / span 3", gr: "2", al: "end",
+    cover: "uploads/pers-r-1.jpg", coverRatio: "1920 / 1080",
+    images: [
+      { src: "uploads/pers-r-1.jpg", ratio: "1920 / 1080", caption: "Vue générale du projet" },
+      { third: true, src: "uploads/rosario-plan-toiture.jpg", ratio: "1654 / 2481", base: "#ffffff", caption: "Plan de toiture" },
+      { third: true, src: "uploads/rosario-plan-r1.jpg", ratio: "1654 / 2481", base: "#ffffff", caption: "Plan du R+1" },
+      { third: true, src: "uploads/rosario-plan-rdc.jpg", ratio: "1654 / 2481", base: "#ffffff", caption: "Plan du RDC" },
+      { src: "uploads/rosario-axo-eclatee-v2.jpg", ratio: "1936 / 1452", base: "#ffffff", caption: "Axonométrie éclatée" },
+      { src: "uploads/rosario-pers-01.jpg", ratio: "1920 / 1080", caption: "Vue perspective, terrasse sur le fleuve" },
+      { src: "uploads/rosario-pers-02.jpg", ratio: "1920 / 1080", caption: "Vue perspective, circulations" }
+    ],
+    text: ["Le projet s’implante le long d’une passerelle qui borde le fleuve Parana à Rosario. Nous avons d’abord réaliser une “digue” que l’on a amménagée pour accueillir différents programmes publiques tels qu’une bibliothèque, une piscine ou encore un restaurant."] },
+
+  { id: "logements-boulogne", title: "Logements à Boulogne", year: "2022", location: "Boulogne, FR", type: "Immeuble d'habitation", mode: "Projet individuel",
+    gc: "1 / span 2",
+    cover: "uploads/plan-r1.png", coverRatio: "2951 / 4172",
+    images: [
+      { src: "uploads/plan-r1.png", ratio: "2951 / 4172", caption: "Plan du R+1" },
+      { half: true, src: "uploads/boulogne-appt-01.jpg", ratio: "2480 / 3508", base: "#ffffff", caption: "Appartement, plan" },
+      { half: true, src: "uploads/boulogne-appt-02.jpg", ratio: "2480 / 3508", base: "#ffffff", caption: "Appartement, plan" },
+      { half: true, src: "uploads/boulogne-appt-03.jpg", ratio: "2480 / 3508", base: "#ffffff", caption: "Appartement, plan" },
+      { half: true, src: "uploads/boulogne-appt-04.jpg", ratio: "2480 / 3508", base: "#ffffff", caption: "Appartement, plan" },
+      { src: "uploads/boulogne-elevation.jpg", ratio: "2481 / 1241", base: "#ffffff", caption: "Élévation sur rue" },
+      { src: "uploads/boulogne-maquette.jpg", ratio: "960 / 1280", base: "#ffffff", caption: "Maquette, cœur d'îlot" }
+    ],
+    text: ["Le projet se situe à Boulogne sur une ancienne zone d’usine Renault. Sur la parcelle se trouvait un ancien grand parking en béton et une halle. Nous avons conservé le parking et conçu en face un nouveau bâtiment.",
+           "Le Rez de chaussée s’élève à 4,5 mètres pour s’aligner avec le RDC du parking. On y trouve des bureaux et des commerces. Il y a un bloc central qui sert à accueillir des locaux mais aussi de la pleine terre pour des arbres. Il sert aussi de jardin privé mis en relation par une passerelle avec le projet du parking."] },
+  { id: "pavillon-tir-arc", title: "Pavillon Tir à l'arc / Bibliothèque", year: "2022", location: "Paris, FR", type: "Pavillon / Fan zone", mode: "Projet individuel",
+    gc: "4 / span 3", mt: "90px",
+    cover: "uploads/tir-arc-perspective.jpg", coverRatio: "4961 / 3509", coverBase: "#ffffff",
+    images: [
+      { src: "uploads/tir-arc-perspective.jpg", ratio: "4961 / 3509", base: "#ffffff", caption: "Perspective générale" },
+      { src: "uploads/tir-arc-coupe-perspective.jpg", ratio: "4498 / 2249", base: "#ffffff", caption: "Coupe perspective" },
+      { src: "uploads/tir-arc-axo-structure.jpg", ratio: "2481 / 1754", base: "#ffffff", caption: "Axonométrie éclatée de la structure" },
+      { src: "uploads/tir-arc-plan-masse.jpg", ratio: "4010 / 3007", base: "#ffffff", caption: "Plan masse" },
+      { half: true, src: "uploads/tir-arc-plan-rdc.jpg", ratio: "4677 / 3508", base: "#ffffff", caption: "Plan du RDC" },
+      { half: true, src: "uploads/tir-arc-plan-r1.jpg", ratio: "4677 / 3508", base: "#ffffff", caption: "Plan du R+1" },
+      { src: "uploads/tir-arc-structure-grille.jpg", ratio: "4961 / 3509", base: "#ffffff", caption: "Structure en plan, trame" },
+      { src: "uploads/tir-arc-maquette-ensemble.jpg", ratio: "1225 / 919", base: "#ffffff", caption: "Maquette, vue d'ensemble" },
+      { src: "uploads/tir-arc-maquette-face.jpg", ratio: "8017 / 6012", base: "#ffffff", caption: "Maquette, vue de face" }
+    ],
+    text: ["Pour les Jeux Olympiques de 2024 à Paris, nous devions créer des pavillons de type “fan zone” pour accueillir le public le long de l’avenue des Champs Elysées.",
+           "Chaque étudiant devait créer un hybride entre un sport et une activité culturelle. J’étais en charge du tir à l’arc et de la bibliothèque."] },
+
+  { id: "legerete-pesanteur", title: "Légèreté et pesanteur", year: "2021", location: "Paris, FR", type: "Maquette conceptuelle", mode: "Projet individuel",
+    gc: "1 / span 2",
+    cover: "uploads/photo-nb-p2a.jpg", coverRatio: "6936 / 9248",
+    images: [
+      { src: "uploads/photo-nb-p2a.jpg", ratio: "6936 / 9248", caption: "Maquette conceptuelle en plâtre" },
+      { src: "uploads/legerete-plan.jpg", ratio: "1 / 1", base: "#ffffff", caption: "Plan" },
+      { src: "uploads/legerete-coupe.jpg", ratio: "1 / 1", base: "#ffffff", caption: "Coupe" },
+      { src: "uploads/legerete-dessin.jpg", ratio: "1 / 1", base: "#ffffff", caption: "Dessin" }
+    ],
+    text: ["J’ai voulu jouer sur la morphologie des poteaux et sur la dualité du sol avec la dalle supérieure pour pour faire ressortir les concepts. Ce cours a également mis l’accent sur l’importance de la matérialité."] },
+  { id: "monolithe-assemblage", title: "Monolithe et assemblage", year: "2021", location: "Paris, FR", type: "Maquette conceptuelle", mode: "Projet individuel",
+    gc: "4 / span 2", mt: "80px",
+    cover: "uploads/maquette-amelioree.jpg", coverRatio: "3472 / 4624",
+    images: [
+      { src: "uploads/maquette-amelioree.jpg", ratio: "3472 / 4624", caption: "Maquette conceptuelle en plâtre" },
+      { src: "uploads/monolithe-plan.jpg", ratio: "1 / 1", base: "#ffffff", caption: "Plan" },
+      { src: "uploads/monolithe-coupe.jpg", ratio: "1 / 1", base: "#ffffff", caption: "Coupe" },
+      { src: "uploads/monolithe-dessin.jpg", ratio: "1 / 1", base: "#ffffff", caption: "Dessin" }
+    ],
+    text: ["J’ai voulu développer l’idée d’une faille pour modéliser mes espaces comme un entre-deux. J’ai développé le projet comme un assemblage de monolithes en jouant sur la finesse des espaces entre eux."] },
+  { id: "atelier-exposition", title: "Atelier d'artiste et salle d'exposition", year: "2021", location: "Paris, FR", type: "Atelier d'artiste et salle d'exposition", mode: "Projet individuel",
+    gc: "2 / span 3", mt: "40px",
+    cover: "uploads/photo-1.jpg", coverRatio: "761 / 749",
+    images: [
+      { src: "uploads/photo-1.jpg", ratio: "761 / 749", caption: "Maquette" },
+      { src: "uploads/atelier-plan.jpg", ratio: "774 / 775", base: "#ffffff", caption: "Plan de situation" },
+      { src: "uploads/atelier-coupes.jpg", ratio: "841 / 837", base: "#ffffff", caption: "Élévations et coupes" },
+      { src: "uploads/atelier-maquette-02.jpg", ratio: "764 / 763", base: "#ffffff", caption: "Vue d'ensemble de la maquette" }
+    ],
+    text: ["Le site qui nous a été donné pour ce projet était relativement neutre : une pente douce avec quelques arbres. L'objectif était de récupérer les principes des maquettes conceptuelles pour proposer un projet manifeste.",
+           "Ce projet prend pour point d'appui un \"poteau\" central qui permet d'élever deux plateformes de part et d'autre pour accueillir le programme d'atelier d'artiste et de salle d'exposition."] }
+];
+
+const DIVERS = [
+  { id: "divers-1", title: "Dessins", year: "2025", location: "France", type: "Dessin", mode: "Projet individuel", gc: "1 / span 4",
+    cover: "uploads/axo_perret_compressee_15Mo.png", coverRatio: "1356 / 2048",
+    images: [
+      { src: "uploads/axo_perret_compressee_15Mo.png", ratio: "1356 / 2048", caption: "Axonométrie" },
+      { src: "uploads/dessin-martinets.jpg", ratio: "2481 / 1761", caption: "Manoir d'un centre de la France" },
+      { src: "uploads/dessin-place-des-fetes.png", ratio: "7020 / 4992", caption: "Place des Fêtes" },
+      { src: "uploads/dessin-encre-de-chine.jpg", ratio: "9930 / 7040", caption: "Encre de Chine" },
+      { src: "uploads/dessin-jardin-vertus.jpg", ratio: "1200 / 1280", caption: "Jardin des Vertus" }
+    ],
+    text: ["Nous avons été sensibilisés dès la première année à la pratique du dessin à la main. C'est une technique que je m'efforce de continuer à pratiquer, bien que nous soyons amenés à réaliser tous nos projets à l'ordinateur. Voici quelques dessins que j'ai réalisés durant ma première année."] },
+  { id: "divers-2", title: "Porte-revues", year: "2025", location: "Paris, FR", type: "Ébénisterie", mode: "Projet individuel", gc: "8 / span 4", mt: "110px",
+    cover: "uploads/image00016.png", coverRatio: "4284 / 5712",
+    images: [
+      { src: "uploads/image00016.png", ratio: "4284 / 5712", caption: "Porte-revues" },
+      { src: "uploads/image00019.png", ratio: "4284 / 5712", caption: "Vue de face" },
+      { src: "uploads/image00018-b5868a6e.png", ratio: "4284 / 5712", caption: "Vue de côté" }
+    ],
+    text: ["Voici un porte-revues en bois et cuir entièrement réalisé à la main. Les assemblages bois ne nécessitent pas de vis grâce à des mi-bois. Les éléments de cuir ont été découpés puis cousus sur mesure pour s'adapter à l'ossature en bois."] },
+  { id: "divers-3", title: "Étagère murale", year: "2025", location: "Paris, FR", type: "Ébénisterie", mode: "Projet individuel", gc: "2 / span 5", mt: "40px",
+    cover: "uploads/etagere-01.png", coverRatio: "4000 / 3000", coverBase: "#ffffff",
+    images: [
+      { src: "uploads/etagere-01.png", ratio: "4000 / 3000", base: "#ffffff", caption: "Étagère" },
+      { src: "uploads/axo-eclatee-etagere.jpg", ratio: "1241 / 931", caption: "Axonométrie éclatée" },
+      { src: "uploads/etagere-02.png", ratio: "3000 / 4000", base: "#ffffff", caption: "Détail d'assemblage" }
+    ],
+    text: ["Voici une étagère murale en bois réalisée à la main, avec des assemblages entièrement réversibles."] },
+  { id: "divers-4", title: "Lampe", year: "2025", location: "Paris, FR", type: "Luminaire", mode: "Projet individuel", gc: "8 / span 4", mt: "140px",
+    cover: "uploads/image00001.png", coverRatio: "4284 / 5712",
+    images: [
+      { src: "uploads/image00001.png", ratio: "4284 / 5712", caption: "Lampe" },
+      { src: "uploads/image00006.png", ratio: "4284 / 5712", caption: "Lampe, vue d'ensemble" }
+    ],
+    text: ["Voici une lampe dont l'élément principal provient d'une lampe plus grande. J'ai réalisé des pieds grâce à des tiges filetées et des assemblages boulonnés très simples, pour donner cet aspect moderne et industriel."] }
+];
+
+const IMG_SETS = [
+  ["Vue d'ensemble depuis la rue", "Détail de façade", "Espace intérieur principal", "Plan de niveau"],
+  ["Insertion dans le site", "Séquence d'entrée", "Vue intérieure", "Coupe transversale", "Détail constructif"],
+  ["Vue axonométrique", "Chantier en cours", "Vue d'ensemble", "Plan masse"]
+];
+
+class Component extends DCLogic {
+  state = { currentId: null, view: "home", hoveredId: null, scrolled: false, lb: null };
+
+  projectsWithMeta(list) {
+    return list.map((p, i) => Object.assign({}, p, {
+      slotLabel: "Image projet " + (i + 1),
+      mode: p.mode || "Projet individuel",
+      gc: p.gc || "auto / span 2",
+      mt: p.mt || "0px",
+      al: p.al || "start",
+      gr: p.gr || "auto",
+      noCover: !p.cover,
+      hasCover: !!p.cover,
+      coverBg: p.cover ? 'url("' + p.cover + '")' : "none",
+      ratio: p.coverRatio || "4 / 3",
+      coverBase: p.coverBase || "transparent",
+      images: (p.images || IMG_SETS[i % IMG_SETS.length].map(c => ({ caption: c })))
+        .map((im, j) => Object.assign({ slot: "Image " + (j + 1) }, im, {
+          noSrc: !im.src,
+          hasSrc: !!im.src,
+          bg: im.src ? 'url("' + im.src + '")' : "none",
+          ratio: im.ratio || "16 / 9",
+          basis: im.third ? "1 1 calc(33.333% - 14px)" : (im.half ? "1 1 calc(50% - 10px)" : "1 1 100%"),
+          base: im.base || "transparent",
+          zoom: im.src ? () => { this.lbOpenedAt = Date.now(); this.setState({ lb: j }); } : null
+        })),
+      captionOpacity: this.state.hoveredId === p.id ? 1 : 0,
+      onEnter: () => this.setState({ hoveredId: p.id }),
+      onLeave: () => this.setState(s => (s.hoveredId === p.id ? { hoveredId: null } : null)),
+      open: () => { this.backAnchor = "annee-" + String(p.year).replace(/\W/g, ""); this.backView = this.state.view; this.setState({ currentId: p.id, view: "project" }); window.scrollTo(0, 0); }
+    }));
+  }
+
+  componentDidMount() {
+    this.onScroll = () => {
+      const down = (window.scrollY || document.documentElement.scrollTop) > 400;
+      if (down !== this.state.scrolled) this.setState({ scrolled: down });
+    };
+    window.addEventListener("scroll", this.onScroll, { passive: true });
+    this.onScroll();
+    this.onKey = e => {
+      if (this.state.lb === null) return;
+      if (e.key === "Escape") this.setState({ lb: null });
+      if (e.key === "ArrowRight") this.moveLb(1);
+      if (e.key === "ArrowLeft") this.moveLb(-1);
+    };
+    window.addEventListener("keydown", this.onKey);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("scroll", this.onScroll);
+    window.removeEventListener("keydown", this.onKey);
+  }
+
+  moveLb(delta) {
+    const imgs = this.currentImages();
+    if (!imgs.length) return;
+    const now = Date.now();
+    if (this.lbOpenedAt && now - this.lbOpenedAt < 400) return;
+    if (this.lbMovedAt && now - this.lbMovedAt < 180) return;
+    this.lbMovedAt = now;
+    const cur = this.state.lb || 0;
+    this.setState({ lb: (cur + delta + imgs.length) % imgs.length });
+  }
+
+  currentImages() {
+    const list = PROJECTS.concat(DIVERS);
+    const p = list.find(x => x.id === this.state.currentId);
+    if (!p) return [];
+    return p.images || [];
+  }
+
+  showTip(text, e) {
+    if (this.copiedAt && Date.now() - this.copiedAt < 1400) return;
+    this.setState({ tip: { text, x: e.clientX, y: e.clientY } });
+  }
+
+  copy(value, e) {
+    const x = e.clientX, y = e.clientY;
+    const node = e.currentTarget;
+    const tip = text => { this.copiedAt = Date.now(); this.setState({ tip: { text, x, y } }); };
+
+    let ok = false;
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = value;
+      ta.setAttribute("readonly", "");
+      ta.style.cssText = "position:fixed;top:0;left:0;opacity:0;pointer-events:none";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      ta.setSelectionRange(0, value.length);
+      ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+    } catch (err) { ok = false; }
+
+    if (ok) { tip("Copié"); return; }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(value).then(
+        () => tip("Copié"),
+        () => { this.selectNode(node); tip("Copiez avec Ctrl+C"); }
+      );
+    } else {
+      this.selectNode(node);
+      tip("Copiez avec Ctrl+C");
+    }
+  }
+
+  selectNode(node) {
+    if (!node) return;
+    try {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    } catch (err) {}
+  }
+
+  go(delta) {
+    const list = PROJECTS.concat(DIVERS);
+    const i = list.findIndex(p => p.id === this.state.currentId);
+    const n = (i + delta + list.length) % list.length;
+    this.setState({ currentId: list[n].id, view: "project" });
+    window.scrollTo(0, 0);
+  }
+
+  renderVals() {
+    const projects = this.projectsWithMeta(PROJECTS);
+    const divers = this.projectsWithMeta(DIVERS);
+    const all = projects.concat(divers);
+    const onProject = this.state.view === "project";
+    const i = onProject ? all.findIndex(p => p.id === this.state.currentId) : -1;
+    const current = i >= 0 ? all[i] : null;
+    const prev = i >= 0 ? all[(i - 1 + all.length) % all.length] : null;
+    const next = i >= 0 ? all[(i + 1) % all.length] : null;
+    const years = [];
+    projects.forEach(p => {
+      let g = years.find(y => y.year === p.year);
+      if (!g) { g = { year: p.year, anchor: "annee-" + String(p.year).replace(/\W/g, ""), items: [] }; years.push(g); }
+      g.items.push(p);
+    });
+    years.sort((a, b) => Number(b.year) - Number(a.year));
+
+    return {
+      projects,
+      divers,
+      years,
+      isDivers: this.state.view === "divers",
+      goDivers: () => { this.setState({ view: "divers" }); window.scrollTo(0, 0); },
+      current: current || {},
+      isHome: this.state.view === "home",
+      isProject: !!current,
+      isAbout: this.state.view === "about",
+      goAbout: () => { this.setState({ view: "about" }); window.scrollTo(0, 0); },
+      prevTitle: prev ? prev.title : "",
+      nextTitle: next ? next.title : "",
+      lightboxOpen: this.state.lb !== null,
+      lbBg: (() => { const im = this.currentImages()[this.state.lb]; return im && im.src ? 'url("' + im.src + '")' : "none"; })(),
+      lbCaption: (() => { const im = this.currentImages()[this.state.lb]; return im ? (im.caption || "") : ""; })(),
+      lbCounter: this.state.lb === null ? "" : (this.state.lb + 1) + " / " + this.currentImages().length,
+      closeLightbox: () => this.setState({ lb: null }),
+      lbPrev: () => this.moveLb(-1),
+      lbNext: () => this.moveLb(1),
+      scrolled: this.state.scrolled,
+      scrollTop: () => window.scrollTo({ top: 0, behavior: "smooth" }),
+      tipText: this.state.tip ? this.state.tip.text : "",
+      tipVisible: !!this.state.tip,
+      tipLeft: (this.state.tip ? this.state.tip.x + 16 : 0) + "px",
+      tipTop: (this.state.tip ? this.state.tip.y + 18 : 0) + "px",
+      tipOpacity: this.state.tip ? 1 : 0,
+      hideTip: () => this.setState({ tip: null }),
+      trackMail: e => this.showTip("Cliquer pour copier", e),
+      copyMail: e => this.copy("edgar.monnet@gmail.com", e),
+      copyPhone: e => this.copy("0652853058", e),
+      goPrev: () => this.go(-1),
+      goNext: () => this.go(1),
+      goHome: () => { this.backAnchor = null; this.setState({ currentId: null, view: "home" }); window.scrollTo(0, 0); },
+      goBack: () => {
+        const a = this.backAnchor, v = this.backView || "home";
+        this.setState({ currentId: null, view: v }, () => {
+          requestAnimationFrame(() => {
+            const el = a && document.getElementById(a);
+            if (!el) { window.scrollTo(0, 0); return; }
+            const top = el.getBoundingClientRect().top + (window.scrollY || 0) - 28;
+            window.scrollTo(0, Math.max(0, top));
+          });
+        });
+      },
+      showYearInGrid: this.props.showYearInGrid ?? true,
+      showLocationInGrid: this.props.showLocationInGrid ?? true,
+      galleryCaptions: this.props.galleryCaptions ?? true
+    };
+  }
+}
+</script>
+</body>
+</html>
